@@ -1,0 +1,11 @@
+<div class="task-view" (clickOutside)="goHome($event)">
+  <input
+    class="input-edit"
+    type="text"
+    name=""
+    id=""
+    [(ngModel)]="task"
+    (change)="changeTask($event)"
+    placeholder="Edit task..."
+  />
+</div>
