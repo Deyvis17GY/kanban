@@ -7,72 +7,71 @@ import {
 import { Board } from "src/app/models/board.model";
 import { Column } from "src/app/models/column.model";
 import { faCoffee, faX } from "@fortawesome/free-solid-svg-icons";
+import { Router } from "@angular/router";
+import { TaskService } from "src/app/services/task.service";
+import { Subscription } from "rxjs";
 @Component({
   selector: "app-main-view",
   templateUrl: "./main-view.component.html",
   styleUrls: ["./main-view.component.scss"],
 })
 export class MainViewComponent implements OnInit {
-  constructor() {}
+  subscriptionStatus: Subscription;
+  constructor(private router: Router, private _taskService: TaskService) {
+    this.subscriptionStatus = this._taskService
+      .getEditStatus()
+      .subscribe((f) => {
+        this.isEdit = f;
+      });
+  }
+
+  ngOnDestroy() {
+    this.subscriptionStatus.unsubscribe();
+  }
 
   faCoffee = faX;
+  isEdit = false;
 
   newTask: string = "";
 
   board: Board = new Board("Test Board", [
     new Column("Ideas", [
       {
-        id: 1,
+        id: this.uniqueId(),
         task: "Some random idea",
       },
       {
-        id: 2,
+        id: this.uniqueId(),
         task: "Another random idea",
-      },
-      {
-        id: 3,
-        task: "Yet another random idea",
       },
     ]),
     new Column("Research", [
       {
-        id: 4,
+        id: this.uniqueId(),
         task: "Lorem ipsum",
       },
       {
-        id: 5,
+        id: this.uniqueId(),
         task: "Dolor sit amet",
       },
       {
-        id: 6,
+        id: this.uniqueId(),
         task: "Consectetur adipiscing elit",
       },
     ]),
     new Column("Todo", [
       {
-        id: 7,
+        id: this.uniqueId(),
         task: "Praesent commodo cursus magna",
       },
       {
-        id: 8,
-        task: "Praesent commodo cursus magna",
-      },
-      {
-        id: 9,
-        task: "Praesent commodo cursus magna",
-      },
-      {
-        id: 10,
+        id: this.uniqueId(),
         task: "Praesent commodo cursus magna",
       },
     ]),
     new Column("Done", [
       {
-        id: 11,
-        task: "Praesent commodo cursus magna",
-      },
-      {
-        id: 12,
+        id: this.uniqueId(),
         task: "Praesent commodo cursus magna",
       },
     ]),
@@ -81,6 +80,10 @@ export class MainViewComponent implements OnInit {
   ngOnInit() {
     if (localStorage.getItem("board")) {
       this.board = JSON.parse(localStorage.getItem("board"));
+    }
+
+    if (this.router.url !== "/") {
+      this.isEdit = true;
     }
   }
 
@@ -103,7 +106,6 @@ export class MainViewComponent implements OnInit {
     this.saveBoard();
   }
 
-  // save list columns in local Storage
   saveBoard() {
     localStorage.setItem("board", JSON.stringify(this.board));
   }
@@ -115,7 +117,6 @@ export class MainViewComponent implements OnInit {
 
     return this.board.columns.filter((f) => {
       if (f.name === e) {
-        console.debug("f", f);
         f.tasks.push({
           id: this.uniqueId(),
           task: value,
@@ -136,6 +137,36 @@ export class MainViewComponent implements OnInit {
     });
 
     this.board.columns = searchColum;
+    this.saveBoard();
+  }
+
+  editTask(id, name) {
+    const searchColumn = this.board.columns.find((col) => col.name === name);
+    const task = searchColumn.tasks.find((t) => t.id === id);
+
+    this._taskService.setTask(task.task);
+    this._taskService.setEditStatus(true);
+    this.router.navigate(["/task", id]);
+  }
+
+  goHome() {
+    this.router.navigate(["/"]);
+  }
+
+  UpdateTask(props) {
+    const copy = this.board.columns.map((f) => {
+      const TaskSelected = f.tasks.map((t) => {
+        if (t.id === props.id) {
+          return { ...t, task: props.task };
+        }
+        return t;
+      });
+
+      return { ...f, tasks: TaskSelected };
+    });
+
+    this.board.columns = copy;
+
     this.saveBoard();
   }
 
