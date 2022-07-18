@@ -1,0 +1,45 @@
+<div class="root">
+  <div class="navbar has-background-dark">
+    <div class="navbar-brand">
+      <div class="navbar-item">
+        <h1 class="app-name has-gradient-text">Kanban</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="board">
+    <div class="board-bar">
+      <p class="board-name">Board Deyvis Inc.</p>
+    </div>
+
+    <div class="board-wrapper">
+      <div class="board-columns" cdkDropListGroup>
+        <div class="board-column" *ngFor="let column of board.columns">
+          <div class="column-title">{{ column.name }}</div>
+          <div
+            class="task-container"
+            cdkDropList
+            #todoList="cdkDropList"
+            [cdkDropListData]="column.tasks"
+            (cdkDropListDropped)="drop($event)"
+          >
+            <div class="task" cdkDrag *ngFor="let item of column.tasks">
+              {{ item.task }}
+              <fa-icon
+                [icon]="faCoffee"
+                (click)="deleteTask(item.id)"
+                class="delete-task"
+              ></fa-icon>
+            </div>
+            <input
+              class="task-input"
+              type="text"
+              (keyup)="createTask($event, column.name)"
+              placeholder="Add a task..."
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

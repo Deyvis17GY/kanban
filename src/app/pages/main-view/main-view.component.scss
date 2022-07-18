@@ -1,0 +1,129 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+@import '../../../style/mixins';
+
+.app-name {
+    font-size: 28px;
+    font-family: "Lato", sans-serif;
+    font-weight: bold;
+}
+
+.has-gradient-text {
+    background: linear-gradient(#13f7f4, #2af598);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.board {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 0;
+
+    .board-bar {
+        background-color: rgba(gray, 0.5);
+        padding: 8px 15px;
+
+        .board-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+    }
+
+    .board-wrapper {
+        display: flex;
+        flex-grow: 1;
+        overflow-x: auto;
+        @include scroll-global;
+
+        .board-columns {
+            display: flex;
+            flex-grow: 1;
+
+            .board-column {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+                flex-basis: 0; // to force the columns to all be the same size, regardless of their content
+
+                min-width: 300px;
+                margin: 50px;
+                padding: 20px;
+                border-radius: 4px;
+                background: rgba(#fff, 0.5);
+
+                &:not(:first-child) {
+                    margin-left: 0;
+                }
+
+                .column-title {
+                    font-size: 20px;
+                    font-weight: 800;
+                    font-family: "Lato", sans-serif;
+                    text-transform: uppercase;
+                    margin-bottom: 20px;
+                }
+            }
+        }
+    }
+}
+
+.task {
+    @include task-body;
+    display: flex;
+    justify-content: space-between; // margin-bottom: 15px;
+    align-items: center;
+}
+
+.task-input {
+    @include task-body(false);
+    width: 95%;
+    border: none;
+    background-color: transparent;
+}
+
+.delete-task {
+    border: none;
+    color: rgb(11, 165, 139);
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 0.1;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.task-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 90%;
+    @include scroll-global(2px);
+}
+
+.cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+        0 8px 10px 1px rgba(0, 0, 0, 0.14),
+        0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+    opacity: 0;
+}
+
+.cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.tasks-container.cdk-drop-list-dragging .task:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
