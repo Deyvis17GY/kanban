@@ -1,0 +1,33 @@
+@mixin scroll-global($width: 7px) {
+    &::-webkit-scrollbar {
+        width: $width;
+        height: 8px;
+        /* width of the entire scrollbar */
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+        /* color of the tracking area */
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #44c097;
+        /* color of the scroll thumb */
+        border-radius: 10px;
+        /* roundness of the scroll thumb */
+        /* creates padding around scroll thumb */
+    }
+}
+
+@mixin task-body($task: true) {
+    display: flex;
+    padding: 15px 12px;
+    border-bottom: 1px solid #ddd;
+    margin: 0 8px 15px 5px;
+
+    @if $task {
+        background: #fff;
+        box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.05),
+            0 0px 14px -10px rgba(0, 0, 0, 0.14), 0 0px 14px 2px rgba(0, 0, 0, 0.05);
+    }
+}
