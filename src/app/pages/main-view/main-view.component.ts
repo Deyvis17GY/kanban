@@ -6,7 +6,7 @@ import {
 } from "@angular/cdk/drag-drop";
 import { Board } from "src/app/models/board.model";
 import { Column } from "src/app/models/column.model";
-import { faCoffee, faX } from "@fortawesome/free-solid-svg-icons";
+import { faX } from "@fortawesome/free-solid-svg-icons";
 import { Router } from "@angular/router";
 import { TaskService } from "src/app/services/task.service";
 import { Subscription } from "rxjs";
@@ -110,14 +110,21 @@ export class MainViewComponent implements OnInit {
     localStorage.setItem("board", JSON.stringify(this.board));
   }
 
+  enterTask($event, name) {
+    if ($event.keyCode !== 13) return;
+    this.createTask($event, name);
+  }
+
+  blurTask($event, name) {
+    this.createTask($event, name);
+  }
+
   createTask($event, e) {
     const { value } = $event.target;
-    if ($event.keyCode !== 13) return;
     if (!value) return;
-
-    return this.board.columns.filter((f) => {
-      if (f.name === e) {
-        f.tasks.push({
+    return this.board.columns.filter((col) => {
+      if (col.name === e) {
+        col.tasks.push({
           id: this.uniqueId(),
           task: value,
         });
@@ -128,12 +135,12 @@ export class MainViewComponent implements OnInit {
   }
 
   deleteTask(id) {
-    const searchColum: Column[] = this.board.columns.map((f) => {
-      const TaskSelected = f.tasks.filter((t) => {
-        return t.id !== id;
+    const searchColum: Column[] = this.board.columns.map((col) => {
+      const TaskSelected = col.tasks.filter((task) => {
+        return task.id !== id;
       });
 
-      return { ...f, tasks: TaskSelected };
+      return { ...col, tasks: TaskSelected };
     });
 
     this.board.columns = searchColum;
@@ -142,9 +149,9 @@ export class MainViewComponent implements OnInit {
 
   editTask(id, name) {
     const searchColumn = this.board.columns.find((col) => col.name === name);
-    const task = searchColumn.tasks.find((t) => t.id === id);
+    const searchTask = searchColumn.tasks.find((task) => task.id === id);
 
-    this._taskService.setTask(task.task);
+    this._taskService.setTask(searchTask.task);
     this._taskService.setEditStatus(true);
     this.router.navigate(["/task", id]);
   }
@@ -154,15 +161,15 @@ export class MainViewComponent implements OnInit {
   }
 
   UpdateTask(props) {
-    const copy = this.board.columns.map((f) => {
-      const TaskSelected = f.tasks.map((t) => {
-        if (t.id === props.id) {
-          return { ...t, task: props.task };
+    const copy = this.board.columns.map((col) => {
+      const TaskSelected = col.tasks.map((task) => {
+        if (task.id === props.id) {
+          return { ...task, task: props.task };
         }
-        return t;
+        return task;
       });
 
-      return { ...f, tasks: TaskSelected };
+      return { ...col, tasks: TaskSelected };
     });
 
     this.board.columns = copy;
