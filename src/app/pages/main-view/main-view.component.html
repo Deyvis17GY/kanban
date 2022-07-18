@@ -2,7 +2,13 @@
   <div class="navbar has-background-dark">
     <div class="navbar-brand">
       <div class="navbar-item">
-        <h1 class="app-name has-gradient-text">Kanban</h1>
+        <h1
+          class="app-name has-gradient-text"
+          [routerLink]="['/']"
+          routerLinkActive="router-link-active"
+        >
+          Kanban
+        </h1>
       </div>
     </div>
   </div>
@@ -16,6 +22,11 @@
       <div class="board-columns" cdkDropListGroup>
         <div class="board-column" *ngFor="let column of board.columns">
           <div class="column-title">{{ column.name }}</div>
+          <div class="edit" *ngIf="isEdit" id="edit">
+            <app-edit-task
+              (updateTask)="UpdateTask($event, column.name)"
+            ></app-edit-task>
+          </div>
           <div
             class="task-container"
             cdkDropList
@@ -23,8 +34,15 @@
             [cdkDropListData]="column.tasks"
             (cdkDropListDropped)="drop($event)"
           >
-            <div class="task" cdkDrag *ngFor="let item of column.tasks">
-              {{ item.task }}
+            <div
+              class="task"
+              cdkDrag
+              *ngFor="let item of column.tasks"
+              (dblclick)="editTask(item.id, column.name)"
+            >
+              <span>
+                {{ item.task }}
+              </span>
               <fa-icon
                 [icon]="faCoffee"
                 (click)="deleteTask(item.id)"

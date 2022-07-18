@@ -1,5 +1,5 @@
 interface Task {
-  id: number | string;
+  id: string;
   task: string;
 }
 export class Column {
